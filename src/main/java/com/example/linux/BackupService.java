@@ -45,6 +45,16 @@ public class BackupService {
         return retVal;
     }
 
+    /**
+     * 寻找符合条件的dump文件
+     * @param oldSshConfig 原服务器配置信息
+     * @param endTime 数据截止时间
+     * @param backupDbName 需要备份的数据库名
+     * @return
+     * @throws ParseException
+     * @throws IOException
+     * @throws JSchException
+     */
     public String handleDumpFile(SshConfig oldSshConfig,String endTime,String backupDbName) throws ParseException, IOException, JSchException {
         // 1.寻找合适条件的dump文件
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
@@ -71,6 +81,18 @@ public class BackupService {
         return dumpFileName;
     }
 
+    /**
+     * 处理binlog日志文件，将符合条件的binlog文件转成.sql文件，用于后续导入
+     * @param oldSshConfig
+     * @param dumpPath
+     * @param dumpFileName
+     * @param binLogPath
+     * @param backupDbName
+     * @param endTime
+     * @return
+     * @throws IOException
+     * @throws JSchException
+     */
     public Map<String,String> handleBinlogFile(SshConfig oldSshConfig,String dumpPath,String dumpFileName,String binLogPath,String backupDbName,String endTime) throws IOException, JSchException {
         String dumpFilePath = dumpPath + dumpFileName;
         String result = SshService.exeCommand(oldSshConfig, "cat " + dumpFilePath + " | grep 'CHANGE MASTER'");
@@ -121,6 +143,20 @@ public class BackupService {
         return retVal;
     }
 
+    /**
+     * 处理文件传输，将处理好的dump文件与binlog格式化的.sql文件传输到目标服务器
+     * @param newSshconfig 新服务器配置信息
+     * @param newDbName 新的数据库用户名
+     * @param newDbPwd  新的数据库密码
+     * @param oldDatabaseName 旧数据库名
+     * @param newDatabaseName 新数据库名
+     * @param dumpFilePath dump文件地址
+     * @param binlogFilePath binlog.sql文件地址
+     * @param newMysqlIsDocker 新的mysql服务是否安装在docker中
+     * @return
+     * @throws IOException
+     * @throws JSchException
+     */
     public String handleFileImport(SshConfig newSshconfig,String newDbName,String newDbPwd,String oldDatabaseName,String newDatabaseName,String dumpFilePath,String binlogFilePath,boolean newMysqlIsDocker) throws IOException, JSchException {
         String commond,result,prefix = "";
         if (newMysqlIsDocker){

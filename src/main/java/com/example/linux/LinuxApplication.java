@@ -25,7 +25,9 @@ public class LinuxApplication implements CommandLineRunner {
         int oldLinuxPort = 22;
         String oldLinuxUserName = "root";
         String oldLinuxPwd  = "aaa";
+        // binlog日志保存位置
         String binLogPath = "/home/mysql/bin_log";
+        // 全量dump文件保存位置
         String dumpPath = "/tmp/";
 
         // 需要备份的数据库名
@@ -42,6 +44,7 @@ public class LinuxApplication implements CommandLineRunner {
         String newLinuxPwd  = "aaa";
         String newMysqlUserName = "root";
         String newMysqlPwd = "ccc";
+        // 数据库是否安装在docker中
         boolean newMysqlIsDocker = true;
 
         SshConfig oldSshConfig = new SshConfig(oldLinuxHost, oldLinuxPort, oldLinuxUserName, oldLinuxPwd);
